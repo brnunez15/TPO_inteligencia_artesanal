@@ -1,8 +1,17 @@
 from tabulate import tabulate
-from cargar_compra import agregar_producto
+from cargar_compra import main as compra_main
+from os import system, name
+
+def limpiar_pantalla() -> None:
+    """
+    Pre: No hay condiciones previas.
+    Post: Limpia la pantalla del terminal.
+    """
+    system("cls" if name == "nt" else "clear")
 
 
 def mostrar_opciones():
+    limpiar_pantalla()
     opciones = [
         ["1", "Cargar Compra"],
         ["2", "Ver Compras"],
@@ -28,7 +37,7 @@ def menu():
             break
 
         elif op == "1":
-            pass
+            compra_main()
 
         elif op == "2":
             pass
