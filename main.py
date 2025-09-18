@@ -1,6 +1,5 @@
 from tabulate import tabulate
-from cargar_compra import agregar_producto
-
+from cierre_caja import main as cierre_main
 
 def mostrar_opciones():
     opciones = [
@@ -40,7 +39,7 @@ def menu():
             pass
 
         elif op == "5":
-            pass
+            cierre_main()
 
         else:
             print("Opcion invalida")
