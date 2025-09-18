@@ -24,9 +24,9 @@ def opciones_productos():
         - no ingresa ningun valor como parametro.
 
     Post:
-        - devuelve un string con una tabla ya formada.
+        - devuelve una matriz con las opciones del menu.
     '''
-    
+
     opciones = [
         ['1', 'Ver productos'],
         ['2', 'Agregar productos'],

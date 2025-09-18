@@ -28,7 +28,7 @@ def opciones_actualizar():
     Pre:
         - no ingresa ningun valor como parametro.
     Post:
-        - devuelve un string con una tabla ya formada.
+        - devuelve una matriz con las opciones del menu.
     '''
     opciones = [
         ['1', 'Actualizar Precio'],
