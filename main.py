@@ -1,5 +1,6 @@
 from tabulate import tabulate
 from cierre_caja import main as cierre_main
+from ver_compras import main as compras_main
 
 def mostrar_opciones():
     opciones = [
@@ -30,7 +31,7 @@ def menu():
             pass
 
         elif op == "2":
-            pass
+            compras_main()
 
         elif op == "3":
             pass
