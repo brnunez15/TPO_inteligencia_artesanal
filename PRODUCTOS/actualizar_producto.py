@@ -16,7 +16,7 @@ def eliminar_producto():
 
 def actualizar_stock():
     '''
-    busca el producto y cambia la modifica la cantidad.
+    busca el producto y modifica la cantidad.
     '''
     pass
 

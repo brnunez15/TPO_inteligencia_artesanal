@@ -1,6 +1,5 @@
 from tabulate import tabulate
-from cargar_compra import agregar_producto
-
+from PRODUCTOS.productos import main as productos_main
 
 def mostrar_opciones():
     opciones = [
@@ -34,7 +33,7 @@ def menu():
             pass
 
         elif op == "3":
-            pass
+            productos_main()
 
         elif op == "4":
             pass

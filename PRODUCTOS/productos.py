@@ -1,5 +1,5 @@
 from tabulate import tabulate 
-import actualizar_producto
+from .actualizar_producto import main as actualizar_main
 
 
 def ver_producto():
@@ -63,7 +63,7 @@ def menu_productos():
             agregar_producto()
 
         elif op == '3':
-            actualizar_producto()
+            actualizar_main()
 
         else: 
             print('opcion incorrecta')
