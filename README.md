@@ -1,3 +1,5 @@
+(https://mail.google.com/mail/u/2?ui=2&ik=d294a32849&attid=0.1&permmsgid=msg-f:1843649831185559293&th=1995f5c0de062efd&view=fimg&fur=ip&permmsgid=msg-f:1843649831185559293&sz=s0-l75-ft&attbid=ANGjdJ86N-lMVyJJj04CBOBU5xfhT6fW59BkBgrkCeMWarKPCInOoLyJqX8tY_ZVJtq4x68tDcGeIrWaisqd3KoziXM_wL71KLvl6ay_384vQjrfRWKlx-iP51hu984&disp=emb&realattid=ii_mfq3ksgl0&zw)
+
 # Sistema de Gestión de Ventas y Productos - Indumentaria
 
 Este proyecto es un sistema para la **gestión interna de un comercio de ropa**, diseñada para facilitar las tareas diarias y centralizar la administración de compras, productos, descuentos y cierre de caja.
