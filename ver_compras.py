@@ -1,7 +1,7 @@
 from tabulate import tabulate
 from typing import List
 
-def filtrar_por_fecha(compras: dict, d: int, m: int, a: int):
+def filtrar_por_fecha(compras: dict, d: int, m: int, a: int) -> List[dict]:
     """
     busca un registro de las compras y la filtra por fecha.
 
@@ -9,7 +9,7 @@ def filtrar_por_fecha(compras: dict, d: int, m: int, a: int):
     """
 
     """suponiendo que compra es un diccionario con todas las compras realizadas y una de sus claves es fecha. 
-    Compara la fecha de la compra con la compra ingresada por el usuario.
+    Compara la fecha de la compra (el valor) con la fecha ingresada por el usuario.
     Si coincide, retorna la compra seleccionada"""
 
     fecha = (d,m,a)
@@ -57,7 +57,7 @@ def menu() -> None:
             anio = int(input("Ingrese el año: "))
 
             compra_filtrada = filtrar_por_fecha(compras, dia, mes, anio)
-            
+
             if compra_filtrada:
                 print(compra_filtrada)
             else:
