@@ -1,33 +1,35 @@
 from tabulate import tabulate
+from typing import List
 import json
 import os
 
 
-def leer_archivo(ruta_json):
-    
-    try: 
+def leer_archivo(ruta_json: str) -> List[dict]:
+
+    try:
         with open(ruta_json, 'rt', encoding='utf-8-sig') as archivo:
             inventario = json.load(archivo)
             return inventario
     except FileNotFoundError:
         print('error: el archivo no existe.')
-        return
+        return []
     except json.JSONDecodeError:
         print('error: el archivo no es un JSON valido.')
+        return []
 
 
 
 def elegir_categoria() -> str:
     '''
     muestra una tabla de opciones de categorias de productos y devuelve un string segun la opcion seleccionada.
-    
+
     pre:
         - no recibe nada como parametro.
 
     post:
         - devuelve un str del nombre de la categoria del producto.
     '''
-    
+
     categorias = [
         ['1', 'accesorios'],
         ['2', 'remeras'],
@@ -46,37 +48,38 @@ def elegir_categoria() -> str:
     while True:
         try:
             op_categoria = int(input('seleccione la categoria (del 1 al 5) del producto que quiere ingresar: '))
-            if op_categoria >= 1 or op_categoria <= 5:
+            if 5 >= op_categoria >= 1 :
                 break
-            else:
-                print('error: debe seleccionar una opcion entre el 1 y el 5')
+            print('error: debe seleccionar una opcion entre el 1 y el 5')
         except ValueError:
             print('error: debe ingresar un numero entero')
 
     if op_categoria == 1:
         return 'accesorios'
-    elif op_categoria == 2:
+    if op_categoria == 2:
         return 'remeras'
-    elif op_categoria == 3:
+    if op_categoria == 3:
         return 'pantalones'
-    elif op_categoria == 4:
+    if op_categoria == 4:
         return 'buzo'
-    else:
-        return 'zapatos'
+    return 'zapatos'
 
 
-def actualizar_precio(ruta_json):
+def actualizar_precio(ruta_json: str) -> None:
+    """
+    Actaliza el precio de un producto.
 
+    Pre: 
+        - ruta_json: Recibe la ruta del archivo donde se modificará el producto.
+    """
 
-    lista_productos = []
     categoria_elegida = elegir_categoria()
 
     inventario = leer_archivo(ruta_json)
 
-    for producto in inventario:
-        if categoria_elegida == producto.get('categoria'):
-            lista_productos.append(producto)
+    lista_productos = [producto for producto in inventario if categoria_elegida == producto.get('categoria')]
 
+    print(lista_productos)
 
     try:
         id_a_buscar = int(input('seleccione el ID del producto que desee modificar: '))
@@ -84,17 +87,47 @@ def actualizar_precio(ruta_json):
             if id_a_buscar == producto.get('id'):
                 nuevo_precio = int(input('ingrese un nuevo precio: '))
                 producto['precio'] = nuevo_precio
-        print(producto)
+                print(producto)
+        try:
+            with open(ruta_json, 'wt', encoding='utf-8') as archivo:
+                json.dump(inventario, archivo, indent=4)
+        except FileNotFoundError as e:
+            print(f'error: el archivo no existe. {e}')
     except ValueError:
         print('error: debe ingresar un numero entero')
 
-    
-    
-def eliminar_producto():
+def eliminar_producto(ruta_json):
     '''
     busca el producto que se quiera eliminar y lo elimina del diccionario de productos.
     '''
-    pass
+    
+    categoria = elegir_categoria()
+    inventario = leer_archivo(ruta_json)
+
+    lista_productos = [producto for producto in inventario if categoria == producto.get('categoria')]
+    print(lista_productos)
+
+    producto_a_eliminar = {}
+
+    try:
+        id_a_buscar = int(input('seleccione el ID del producto que desee eliminar: '))
+        for producto in inventario:
+            if id_a_buscar == producto.get('id'):
+                producto_a_eliminar = producto
+
+        if producto_a_eliminar:
+            inventario.remove(producto_a_eliminar)
+        print(inventario)
+
+        try:
+            with open(ruta_json, 'wt', encoding='utf-8') as archivo:
+                json.dump(inventario, archivo, indent=4)
+
+        except FileNotFoundError as e:
+            print(f'error: el archivo no existe. {e}')
+
+    except ValueError:
+        print('error: debe ingresar un numero entero')
 
 
 def actualizar_stock():
@@ -148,7 +181,7 @@ def submenu_actualizacion():
         elif op == '1':
             actualizar_precio(ruta_json)
         elif op == '2':
-            eliminar_producto()
+            eliminar_producto(ruta_json)
         elif op == '3':
             actualizar_stock()
         else:
