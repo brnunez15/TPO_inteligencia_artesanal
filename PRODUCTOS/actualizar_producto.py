@@ -1,93 +1,52 @@
-from tabulate import tabulate
-from typing import List
 import json
 import os
+from utilidades import leer_archivo, mostrar_tabla, ver_productos
 
+def mostrar_diccionario (diccionario: dict):
+    for key, value in diccionario.items():
+        print(f"{key}: {value}")
 
-def leer_archivo(ruta_json: str) -> List[dict]:
-
-    try:
-        with open(ruta_json, 'rt', encoding='utf-8-sig') as archivo:
-            inventario = json.load(archivo)
-            return inventario
-    except FileNotFoundError:
-        print('error: el archivo no existe.')
-        return []
-    except json.JSONDecodeError:
-        print('error: el archivo no es un JSON valido.')
-        return []
-
-
-
-def elegir_categoria() -> str:
-    '''
-    muestra una tabla de opciones de categorias de productos y devuelve un string segun la opcion seleccionada.
-
-    pre:
-        - no recibe nada como parametro.
-
-    post:
-        - devuelve un str del nombre de la categoria del producto.
-    '''
-
-    categorias = [
-        ['1', 'accesorios'],
-        ['2', 'remeras'],
-        ['3', 'pantalones'],
-        ['4', 'buzo'],
-        ['5', 'zapatos']
-    ]
-
-    print( tabulate(
-        categorias,
-        headers=['opcion', 'categoria'],
-        tablefmt= 'fancy_grid',
-        colalign=('center', 'left')
-    ))
-
+def ingresar_precio() -> int:
     while True:
         try:
-            op_categoria = int(input('seleccione la categoria (del 1 al 5) del producto que quiere ingresar: '))
-            if 5 >= op_categoria >= 1 :
-                break
-            print('error: debe seleccionar una opcion entre el 1 y el 5')
+            nuevo_precio = int(input("Ingresa un nuevo precio: "))
+            break
         except ValueError:
-            print('error: debe ingresar un numero entero')
+            print("Debe ingresar un número entero válido.")
+    return nuevo_precio
 
-    if op_categoria == 1:
-        return 'accesorios'
-    if op_categoria == 2:
-        return 'remeras'
-    if op_categoria == 3:
-        return 'pantalones'
-    if op_categoria == 4:
-        return 'buzo'
-    return 'zapatos'
-
+def ingresar_stock():
+    while True:
+        try:
+            nuevo_stock = int(input("Ingrese un nuevo stock: "))
+            break
+        except ValueError:
+            print("Debe ingresar un número entero válido: ")
+    return nuevo_stock
 
 def actualizar_precio(ruta_json: str) -> None:
     """
-    Actaliza el precio de un producto.
+    Actualiza el precio de un producto.
 
     Pre: 
         - ruta_json: Recibe la ruta del archivo donde se modificará el producto.
     """
-
-    categoria_elegida = elegir_categoria()
-
-    inventario = leer_archivo(ruta_json)
-
-    lista_productos = [producto for producto in inventario if categoria_elegida == producto.get('categoria')]
-
-    print(lista_productos)
+    while True:
+        productos_filtrados = ver_productos(ruta_json)
+        inventario = leer_archivo(ruta_json)
+        if productos_filtrados:
+            mostrar = [[producto['id'], producto['categoria'], producto['nombre'], producto['stock'], f'${producto['precio']:.2f}'] for producto in productos_filtrados]
+            mostrar_tabla(mostrar, ['ID', 'CATEGORÍA', 'NOMBRE', 'STOCK', 'PRECIO'])
+            break
 
     try:
-        id_a_buscar = int(input('seleccione el ID del producto que desee modificar: '))
+        id_a_buscar = int(input('\nSeleccione el ID del producto que desee modificar: '))
         for producto in inventario:
             if id_a_buscar == producto.get('id'):
-                nuevo_precio = int(input('ingrese un nuevo precio: '))
+                nuevo_precio = ingresar_precio()
                 producto['precio'] = nuevo_precio
-                print(producto)
+                print("\n¡Producto actualizado con éxito!\n")
+                mostrar_diccionario(producto)
         try:
             with open(ruta_json, 'wt', encoding='utf-8') as archivo:
                 json.dump(inventario, archivo, indent=4)
@@ -96,16 +55,22 @@ def actualizar_precio(ruta_json: str) -> None:
     except ValueError:
         print('error: debe ingresar un numero entero')
 
-def eliminar_producto(ruta_json):
-    '''
-    busca el producto que se quiera eliminar y lo elimina del diccionario de productos.
-    '''
-    
-    categoria = elegir_categoria()
-    inventario = leer_archivo(ruta_json)
+def eliminar_producto(ruta_json: str) -> None:
+    """
+    Elimina un producto del archivo recibido.
 
-    lista_productos = [producto for producto in inventario if categoria == producto.get('categoria')]
-    print(lista_productos)
+    Pre:
+        - ruta_json: recibe la ruta donde se eliminará el producto.
+
+    """
+
+    while True:
+        productos_filtrados = ver_productos(ruta_json)
+        inventario = leer_archivo(ruta_json)
+        if productos_filtrados:
+            mostrar = [[producto['id'], producto['categoria'], producto['nombre'], producto['stock'], f'${producto['precio']:.2f}'] for producto in productos_filtrados]
+            mostrar_tabla(mostrar, ['ID', 'CATEGORÍA', 'NOMBRE', 'STOCK', 'PRECIO'])
+            break
 
     producto_a_eliminar = {}
 
@@ -117,7 +82,9 @@ def eliminar_producto(ruta_json):
 
         if producto_a_eliminar:
             inventario.remove(producto_a_eliminar)
-        print(inventario)
+            print("\n¡Producto eliminado exitosamente!\n")
+        else:
+            print("No se encontró el producto.")
 
         try:
             with open(ruta_json, 'wt', encoding='utf-8') as archivo:
@@ -130,12 +97,35 @@ def eliminar_producto(ruta_json):
         print('error: debe ingresar un numero entero')
 
 
-def actualizar_stock():
-    '''
-    busca el producto y modifica la cantidad.
-    '''
-    pass
+def actualizar_stock(ruta_json):
+    """
+    Actualiza el stock de un producto.
 
+    Pre: 
+        - ruta_json: Recibe la ruta del archivo donde se modificará el producto.
+    """
+    while True:
+        productos_filtrados = ver_productos(ruta_json)
+        inventario = leer_archivo(ruta_json)
+        if productos_filtrados:
+            mostrar = [[producto['id'], producto['categoria'], producto['nombre'], producto['stock'], f'${producto['precio']:.2f}'] for producto in productos_filtrados]
+            mostrar_tabla(mostrar, ['ID', 'CATEGORÍA', 'NOMBRE', 'STOCK', 'PRECIO'])
+            break
+    try:
+        id_a_buscar = int(input('\nSeleccione el ID del producto que desee modificar: '))
+        for producto in inventario:
+            if id_a_buscar == producto.get('id'):
+                nuevo_stock = ingresar_stock()
+                producto['stock'] = nuevo_stock
+                print("\n¡Producto actualizado con éxito!\n")
+                mostrar_diccionario(producto)
+        try:
+            with open(ruta_json, 'wt', encoding='utf-8') as archivo:
+                json.dump(inventario, archivo, indent=4)
+        except FileNotFoundError as e:
+            print(f'error: el archivo no existe. {e}')
+    except ValueError:
+        print('error: debe ingresar un numero entero')
 
 def opciones_actualizar():
     '''
@@ -152,14 +142,7 @@ def opciones_actualizar():
         ['3', 'Actualizar stock'],
         ['0', 'Salir']
     ]
-
-    return tabulate(
-        opciones, 
-        headers=["Opción", "Descripción"], 
-        tablefmt='fancy_grid', 
-        colalign=("center", "left")
-        )
-        
+    return opciones
 
 def submenu_actualizacion():
     '''
@@ -168,33 +151,29 @@ def submenu_actualizacion():
 
     while True:
         opciones = opciones_actualizar()
-        print(opciones)
+        mostrar_tabla(opciones, ['Opción', 'Descripción'])
 
         carpeta_actual = os.path.dirname(__file__)
         ruta_json = os.path.join(carpeta_actual, '..', 'inventario.json')
-
-        op = input('ingrese una opcion: ')
+        op = input('Ingrese una opción: ')
 
         if op == '0':
-            from productos import main as productos_main
-            productos_main()
-        elif op == '1':
+            print("Volviendo al menú de productos...\n")
+            break
+        if op == '1':
             actualizar_precio(ruta_json)
         elif op == '2':
             eliminar_producto(ruta_json)
         elif op == '3':
-            actualizar_stock()
+            actualizar_stock(ruta_json)
         else:
-            print('opcion incorrecta')
-
+            print('Opción incorrecta')
 
 def main():
     '''
     funcion principal del modulo, llama al menu del producto.
     '''
-
     submenu_actualizacion()
-
 
 if __name__ == '__main__':
     main()
