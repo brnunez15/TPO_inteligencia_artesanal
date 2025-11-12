@@ -1,8 +1,8 @@
 import json
 import os
-from utilidades import leer_archivo, mostrar_tabla, ver_productos
+from PRODUCTOS.utilidades import leer_archivo, mostrar_tabla, ver_productos
 
-def mostrar_diccionario (diccionario: dict):
+def mostrar_diccionario (diccionario: dict) -> None:
     for key, value in diccionario.items():
         print(f"{key}: {value}")
 

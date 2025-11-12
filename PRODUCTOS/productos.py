@@ -1,8 +1,8 @@
 import json
 import os
 from typing import List, Tuple
-from actualizar_producto import main as actualizar_main
-from utilidades import leer_archivo, elegir_categoria, mostrar_tabla, ver_productos
+from PRODUCTOS.actualizar_producto import main as actualizar_main
+from PRODUCTOS.utilidades import leer_archivo, elegir_categoria, mostrar_tabla, ver_productos
 
 def opciones_productos() -> List[list[str]]:
     """
