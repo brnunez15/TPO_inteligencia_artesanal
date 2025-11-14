@@ -1,27 +1,86 @@
 from tabulate import tabulate
 from typing import List, Tuple
 
-def filtrar_por_fecha(dict_compras: dict, desde: Tuple[int,int,int], hasta: Tuple[int,int,int]) -> List[dict]:
+def mostrar_compras(lista_compras: list[dict]) -> None:
+    """
+    Muestra todas las compras realizadas del dia de hoy.
+
+    Pre:
+        - lista_compras: lista de diccionarios de todas las compras realizadas.
+    """
+    if not lista_compras:
+        print("No hay registros de compras.")
+        return
+
+    tabla = [
+        [
+            compra["Fecha"],
+            compra["Hora"],
+            compra["Producto"],
+            compra["Cantidad"],
+            f"${compra['Precio Unitario']}",
+            f"${compra['Subtotal']}",
+            f"{compra["Descuento"]}%",
+            f"${compra['Total']}"
+        ]
+        for compra in lista_compras
+    ]
+
+    print(tabulate(
+        tabla,
+        headers=["Fecha", "Hora", "Producto", "Cantidad", "Precio Unitario", "Subtotal", "Descuento", "Total"],
+        tablefmt="fancy_grid"
+    ))
+
+def leer_archivo() -> List[dict]:
+    """
+    Lee un archivo y transforma las lineas del mismo en una lista de diciconarios, donde cada diccionario es la una linea del archivo.
+
+    Post:
+        - devuelve la lista de diccionarios creada.
+    """
+    try:
+        with open("archivos/CSV/registro_compras.csv", "rt", encoding="utf-8-sig") as contenido:
+            lineas = [linea.strip() for linea in contenido.readlines()]
+            encabezado = lineas[0].split(",")
+            registros = []
+            for linea in lineas[1:]:
+                valores = linea.split(",")
+                registro = dict(zip(encabezado, valores))
+                registros.append(registro)
+            return registros
+    except FileNotFoundError:
+        print("El archivo, no se encontro.")
+    except Exception:
+        print("ERROR la leer el archivo.")
+
+def filtrar_por_fecha(lista_compras: list[dict], desde: Tuple[int,int,int], hasta: Tuple[int,int,int]) -> List[dict]:
     """
     busca un registro de las compras y la filtra por un rango de fechas.
 
     pre:
-        - compras: diccionario con todas las compras registradas.
+        - lista_compras: lista de diccionarios, donde cada diccionario son todas las compras registradas.
         - desde: tupla con una fecha (numeros enteros)
         - hasta: tupla con una fecha (numeros enteros)
 
     post: 
         - compras_encontradas: devuelve una lista con el/los registros de las compras de un rango de fechas.
 
-    suponiendo que compra es un diccionario con todas las compras realizadas y una de sus claves es fecha. 
-    Compara la fecha de la compra (el valor) con las fechas ingresadas por el usuario.
-    Si coincide, retorna la compra seleccionada
     """
 
     fecha_desde = (desde[2], desde[1], desde[0])
     fecha_hasta = (hasta[2], hasta[1], hasta[0])
 
-    compras_encontradas = [compra for compra in dict_compras.values() if fecha_desde <= (compra.get("fecha")[2], compra.get("fecha")[1], compra.get("fecha")[0]) <= fecha_hasta]
+    compras_encontradas = []
+
+    for compra in lista_compras:
+        fecha_str = compra["Fecha"]
+        anio, mes, dia = map(int, fecha_str.split("-"))
+        fecha_compra = (anio, mes, dia)
+
+        if fecha_desde <= fecha_compra <= fecha_hasta:
+            compras_encontradas.append(compra)
+
     return compras_encontradas
 
 
@@ -87,6 +146,8 @@ def menu() -> None:
     """
     Menu de cer compras.
     """
+    compras = leer_archivo()
+
     while True:
 
         opciones = mostrar_opciones()
@@ -117,8 +178,8 @@ def menu() -> None:
                 if validar_fecha(fecha1):
                     break
                 print(f"La fecha {dia1}/{mes1}/{anio1} es inválida.\n")
-                
-            while True: #aplique un while true para cada fecha porque si aplicaba uno solo para las dos, se hacia la filtracion por mas de que alguna de las dos sea invalida.
+
+            while True:
                 try:
                     print("\nFECHA HASTA: ")
                     dia2 = int(input("Ingrese el dia: "))
@@ -139,25 +200,15 @@ def menu() -> None:
             compra_filtrada = filtrar_por_fecha(compras, (fecha1), (fecha2))
 
             if compra_filtrada:
-                print(compra_filtrada)
+                mostrar_compras(compra_filtrada)
             else:
                 print(f"No se encontro una compra entre las fechas {dia1}/{mes1}/{anio1} y {dia2}/{mes2}/{anio2}")
+
+        elif op == "2":
+            archivo = leer_archivo()
+            print(archivo)
         else:
             print("Opcion invalida")
-
-compras = {
-        1: {"cliente" : "Brisa Nuñez", "producto": 1, "cantidad": 1, "fecha": (1,10,2025)},
-        2: {"cliente" : "Natalia Lescano", "producto": 2, "cantidad": 3, "fecha": (1,1,2012)},
-        3: {"cliente" : "Luka Peralta", "producto": 3, "cantidad": 1, "fecha": (1,10,2025)},
-        4: {"cliente" : "Sebastian Carini", "producto": 4, "cantidad": 2, "fecha": (15,9,2025)},
-    }
-
-productos = {
-    1: {"nombre": "remera", "descripcion": "roja"},
-    2: {"nombre": "short", "descripcion": "jean"},
-    3: {"nombre": "buzo", "descripcion": "negro"},
-    4: {"nombre": "cinto", "descripcion": "marron"}
-}
 
 def main() -> None:
     """

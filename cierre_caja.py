@@ -2,35 +2,73 @@ from tabulate import tabulate
 from typing import List
 from datetime import datetime
 
-def calcular_cierre(dict_compras, fecha):#resumen
+def leer_archivo() -> List[dict]:
+    """
+    Lee un archivo y transforma las lineas del mismo en una lista de diciconarios, donde cada diccionario es la una linea del archivo.
+
+    Post:
+        - devuelve la lista de diccionarios creada.
+    """
+    try:
+        with open("archivos/CSV/registro_compras.csv", "rt", encoding="utf-8-sig") as contenido:
+            lineas = [linea.strip() for linea in contenido.readlines()]
+            encabezado = lineas[0].split(",")
+            registros = []
+            for linea in lineas[1:]:
+                valores = linea.split(",")
+                registro = dict(zip(encabezado, valores))
+                registros.append(registro)
+            return registros
+    except FileNotFoundError:
+        print("El archivo Json no se encontro.")
+    except Exception:
+        print("ERROR la leer el archivo Json.")
+
+
+def calcular_cierre(lista_compras: list[dict], fecha:str) -> float:
     """
     Va a sumar todos los productos que se agregaron a la compra y si hay descuentos, los aplica.
 
+    Pre:
+        - lista_compras: recibe la lista de diccionarios de las compras que fueron realizadas.
+        - fecha: recibe la fecha del dia de hoy.
+
     Post: retorna el resultado de la compra.
     """
-    precios = [compra.get("precio") for compra in dict_compras.values() if compra.get("fecha") == fecha]
+    precios = [float(compra["Total"] )for compra in lista_compras if compra.get("Fecha") == fecha]
     return sum(precios)
 
-def ver_total_cierre(dict_compras, fecha):
+def ver_total_cierre(lista_compras: list[dict], fecha:str) -> None:
     """
-    Muestra el resumen de los productos vendidos del dia.
+    Muestra el resumen de los productos vendidos del dia. Incluyendo el total de los productos.
 
-    Post: retorna el resumen detallado simulando un ticket o comprobante de compra.
+    Pre:
+        - lista_compras: recibe una lista de diccionarios de las compras realizadas del dia.
+        -fecha: recibe la fecha del dia de hoy.
+    
     """
-    resumen = [compra for compra in dict_compras.values() if compra.get("fecha") == fecha]
+    resumen = [compra for compra in lista_compras if compra.get("Fecha") == fecha]
 
     if not resumen:
         print("No se registraron compras en la fecha indicada.")
         return
 
     tabla = [
-        [compra["cliente"], compra["producto"], compra["cantidad"], compra["precio"]]
+        [
+            compra["Producto"],
+            compra["Cantidad"],
+            f"${compra['Precio Unitario']}",
+            f"${compra['Subtotal']}",
+            f"{compra["Descuento"]}%",
+            f"${compra['Total']}"
+        ]
         for compra in resumen
     ]
 
-    print(tabulate(tabla, headers=["Cliente", "Producto", "Cantidad", "Precio"], tablefmt="fancy_grid"))
-    print(f"\nTotal del día: ${sum([c['precio'] for c in resumen])}\n")
-
+    print("\nResumen de compras del día:\n")
+    print(tabulate(tabla, headers=["Producto", "Cantidad", "Precio Unitario", "Subtotal", "Descuento", "Total"], tablefmt="fancy_grid"))
+    total = sum(float(c["Total"]) for c in resumen)
+    print(f"\nTotal del día: ${total:.2f}\n")
 
 def mostrar_opciones() -> List[list[str]]:
     """
@@ -47,6 +85,12 @@ def mostrar_opciones() -> List[list[str]]:
     return (tabulate(opciones, headers=["Opción", "Descripción"], tablefmt='fancy_grid', colalign=("center", "left")))
 
 def menu() -> None:
+    """
+    Menu principal del modulo.
+    """
+    compras = leer_archivo()
+    fecha_actual = datetime.now().date().strftime('%Y-%m-%d')
+    hora_actual = datetime.now().time().strftime('%H:%M:%S')
     while True:
 
         opciones = mostrar_opciones()
@@ -60,39 +104,24 @@ def menu() -> None:
 
         elif op == "1":
             print("\n----Calcula el cierre de caja----\n")
-            fecha_actual = datetime.now()
-            fecha_hoy = (fecha_actual.day, fecha_actual.month, fecha_actual.year)
-            cierre = calcular_cierre(compras, fecha_hoy)
-            print(f"\n----CIERRE DEL DIA {fecha_actual.strftime('%d/%m/%Y')} a las {fecha_actual.strftime('%H:%M:%S')}----\n")
+
+            cierre = calcular_cierre(compras, fecha_actual)
+            print(f"\n----CIERRE DEL DIA {fecha_actual} a las {hora_actual}----\n")
             print(f"El total de las compras del dia es: ${cierre}")
+            input("\nPresione Enter para continuar...")
 
         elif op == "2":
             print("Muestra el total del cierre de caja.")
-            fecha_actual = datetime.now()
-            fecha_hoy = (fecha_actual.day, fecha_actual.month, fecha_actual.year)
-            ver_total_cierre(compras, fecha_hoy)
+            
+            ver_total_cierre(compras, fecha_actual)
 
         else:
             print("Opcion invalida")
 
-compras = {
-    1: {"cliente" : "Brisa Nuñez", "producto": 1, "cantidad": 1, "fecha": (1,10,2025), "precio": 15000},
-    2: {"cliente" : "Natalia Lescano", "producto": 2, "cantidad": 3, "fecha": (1,1,2012), "precio": 50000},
-    3: {"cliente" : "Luka Peralta", "producto": 3, "cantidad": 1, "fecha": (1,10,2025), "precio": 70000},
-    4: {"cliente" : "Sebastian Carini", "producto": 4, "cantidad": 2, "fecha": (15,9,2025), "precio": 5000},
-    5: {"cliente" : "Sebastian Carini", "producto": 4, "cantidad": 2, "fecha": (31,10,2025), "precio": 5000},
-    6: {"cliente" : "Luka Peralta", "producto": 3, "cantidad": 1, "fecha": (31,10,2025), "precio": 70000}
-
-}
-
-productos = {
-    1: {"nombre": "remera", "descripcion": "roja"},
-    2: {"nombre": "short", "descripcion": "jean"},
-    3: {"nombre": "buzo", "descripcion": "negro"},
-    4: {"nombre": "cinto", "descripcion": "marron"}
-}
-
 def main() -> None:
+    """
+    Funcion principal del programa.
+    """
     menu()
 
 if __name__ == "__main__":
