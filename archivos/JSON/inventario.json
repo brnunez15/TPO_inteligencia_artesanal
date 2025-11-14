@@ -1,0 +1,30 @@
+[
+    {
+        "id": 22,
+        "categoria": "accesorios",
+        "nombre": "gorra",
+        "precio": 2000,
+        "stock": 10
+    },
+    {
+        "id": 25,
+        "categoria": "pantalones",
+        "nombre": "jean",
+        "precio": 35000.0,
+        "stock": 8
+    },
+    {
+        "id": 24,
+        "categoria": "zapatos",
+        "nombre": "zapatillas",
+        "precio": 5000.0,
+        "stock": 25
+    },
+    {
+        "id": 30,
+        "categoria": "accesorios",
+        "nombre": "aro",
+        "precio": 3000,
+        "stock": 20
+    }
+]

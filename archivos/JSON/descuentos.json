@@ -1,0 +1,46 @@
+{
+    "descuentos_semanales": [
+        {
+            "dia": 6,
+            "nombre_dia": "Domingo",
+            "descuento": 15,
+            "metodo_de_pago": "visa"
+        },
+        {
+            "dia": 0,
+            "nombre_dia": "Lunes",
+            "descuento": 20,
+            "metodo_de_pago": "qr"
+        },
+        {
+            "dia": 1,
+            "nombre_dia": "Martes",
+            "descuento": 20,
+            "metodo_de_pago": "transferencia"
+        },
+        {
+            "dia": 2,
+            "nombre_dia": "Miercoles",
+            "descuento": 5,
+            "metodo_de_pago": "mastercard"
+        },
+        {
+            "dia": 3,
+            "nombre_dia": "Jueves",
+            "descuento": 20,
+            "metodo_de_pago": "qr"
+        },
+        {
+            "dia": 4,
+            "nombre_dia": "Viernes",
+            "descuento": 15,
+            "metodo_de_pago": "efectivo"
+        },
+        {
+            "dia": 5,
+            "nombre_dia": "Sabado",
+            "descuento": 70,
+            "metodo_de_pago": "efectivo"
+        }
+    ]
+}
